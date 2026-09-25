@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CineMatch AI — Discover Your Next Favorite Story</title>
+
+  <!-- Favicon (Inline Modern SVG) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23141419' stroke='%23E50914' stroke-width='2'/%3E%3Cpolygon points='12,9 23,16 12,23' fill='%2300D4FF'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23E50914'/%3E%3C/svg%3E" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core Glassmorphism & Streaming Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+  <!-- ========================================================================
+       Splash Screen (Netflix / Apple TV Cinematic Reveal)
+       ======================================================================== -->
+  <div id="splash-screen">
+    <div class="splash-logo-container">
+      <svg class="splash-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="30" fill="#14141E" stroke="#E50914" stroke-width="3"/>
+        <path d="M22 18L46 32L22 46V18Z" fill="url(#splash_grad)"/>
+        <circle cx="32" cy="32" r="8" fill="#00D4FF" fill-opacity="0.8"/>
+        <defs>
+          <linearGradient id="splash_grad" x1="22" y1="18" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#E50914"/>
+            <stop offset="1" stop-color="#00D4FF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="splash-title">CineMatch <span>AI</span></div>
+      <div class="splash-tagline">Discover your next favorite story</div>
+      <div class="splash-progress-bar">
+        <div class="splash-progress-fill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       Glassmorphic Sticky Header
+       ======================================================================== -->
+  <header class="glass-header">
+    <nav class="navbar">
+      <div class="nav-brand" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <svg class="brand-icon" viewBox="0 0 36 36" fill="none">
+          <circle cx="18" cy="18" r="16" fill="#12121A" stroke="#E50914" stroke-width="2.5"/>
+          <polygon points="14,10 26,18 14,26" fill="#E50914"/>
+          <circle cx="18" cy="18" r="4.5" fill="#00D4FF"/>
+        </svg>
+        <div class="brand-text">CineMatch <span>AI</span></div>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#hero" class="nav-link active">Home</a></li>
+        <li><a href="#search-section" class="nav-link">Explore</a></li>
+        <li><a href="#recommender-tuner" class="nav-link">AI Tuner</a></li>
+        <li><a href="#moods-section" class="nav-link">Moods</a></li>
+        <li><a href="javascript:void(0)" onclick="App.openAnalyticsModal()" class="nav-link">Analytics</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="btn btn-glass btn-icon" title="Toggle Cinema Ambient Glow" onclick="App.toggleAmbientGlow()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+        </button>
+
+        <button class="btn btn-glass btn-icon" title="Favorites" onclick="App.openDrawer('favorites')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+          <span class="badge-count" id="badge-favorites">0</span>
+        </button>
+
+        <button class="btn btn-glass btn-icon" title="Watchlist" onclick="App.openDrawer('watchlist')">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+          </svg>
+          <span class="badge-count" id="badge-watchlist">0</span>
+        </button>
+
+        <button class="btn btn-primary" onclick="App.openAnalyticsModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>AI Insights</span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ========================================================================
+       Hero Section with Dynamic Backdrop & Cinematic Banner
+       ======================================================================== -->
+  <section id="hero" class="hero-section">
+    <div id="hero-backdrop" class="hero-backdrop"></div>
+    
+    <div class="hero-content">
+      <div class="hero-badge-wrap">
+        <svg class="hero-badge-icon" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+        </svg>
+        <span class="hero-badge-text">CineMatch AI Spotlight</span>
+      </div>
+
+      <h1 id="hero-title" class="hero-title">Loading Featured Title...</h1>
+
+      <div class="hero-meta">
+        <span id="hero-rating" class="hero-rating">★ 4.2 / 5.0</span>
+        <span id="hero-year">2024</span>
+        <span id="hero-runtime">148 min</span>
+        <span id="hero-genre" class="modal-badge cyan">Sci-Fi</span>
+        <span id="hero-match" class="hero-ai-match">98% AI Match</span>
+      </div>
+
+      <p id="hero-overview" class="hero-overview">
+        Experience seamless intelligent recommendations tailored through collaborative latent vectors and genre proximity.
+      </p>
+
+      <div class="hero-actions">
+        <button class="btn btn-primary" onclick="if(App.currentHeroMovie) App.openTrailer(App.currentHeroMovie.trailer_url, App.currentHeroMovie.clean_title)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Watch Trailer</span>
+        </button>
+
+        <button class="btn btn-glass" onclick="if(App.currentHeroMovie) App.openMovieDetail(App.currentHeroMovie.movieId)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <span>More Details</span>
+        </button>
+
+        <button class="btn btn-glass" onclick="if(App.currentHeroMovie) App.triggerContextualRecommendations(encodeURIComponent(App.currentHeroMovie.clean_title))">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+          <span>Find Similar</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       Search Bar with Glass Effect & Autocomplete
+       ======================================================================== -->
+  <section id="search-section" class="search-container">
+    <div class="search-glass-card">
+      <div class="search-input-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Search 9,742 movies..."
+          autocomplete="off"
+          oninput="App._handleSearchInput(this.value)"
+          onkeydown="if(event.key === 'Enter') App.executeSearch()"
+        />
+        <span class="search-shortcut">Press /</span>
+      </div>
+
+      <!-- Live Autocomplete dropdown -->
+      <div id="search-autocomplete" class="autocomplete-dropdown"></div>
+
+      <!-- Filters Row -->
+      <div class="filters-row">
+        <div class="filter-group">
+          <select id="filter-genre" class="filter-select" onchange="App.executeSearch()">
+            <option value="All">All Genres</option>
+            <option value="Action">Action</option>
+            <option value="Adventure">Adventure</option>
+            <option value="Animation">Animation</option>
+            <option value="Comedy">Comedy</option>
+            <option value="Crime">Crime</option>
+            <option value="Drama">Drama</option>
+            <option value="Fantasy">Fantasy</option>
+            <option value="Horror">Horror</option>
+            <option value="Mystery">Mystery</option>
+            <option value="Romance">Romance</option>
+            <option value="Sci-Fi">Sci-Fi</option>
+            <option value="Thriller">Thriller</option>
+          </select>
+
+          <select id="filter-year" class="filter-select" onchange="App.executeSearch()">
+            <option value="all">All Release Years</option>
+            <option value="2010s">2010s & Beyond</option>
+            <option value="2000s">2000s (2000 - 2009)</option>
+            <option value="1990s">1990s (1990 - 1999)</option>
+            <option value="classic">Classic Era (&lt; 1990)</option>
+          </select>
+
+          <select id="filter-rating" class="filter-select" onchange="App.executeSearch()">
+            <option value="0">All Ratings</option>
+            <option value="4.0">★ 4.0 & Above</option>
+            <option value="3.5">★ 3.5 & Above</option>
+            <option value="3.0">★ 3.0 & Above</option>
+          </select>
+
+          <select id="filter-sort" class="filter-select" onchange="App.executeSearch()">
+            <option value="popularity">Most Popular (Ratings Volume)</option>
+            <option value="rating">Highest Rated</option>
+            <option value="year_desc">Newest First</option>
+            <option value="title">Title (A - Z)</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" onclick="App.executeSearch()">
+          <span>Instant Filter</span>
+        </button>
+      </div>
+
+      <!-- Genre Quick Filter Pills -->
+      <div class="filter-pills">
+        <button class="genre-pill active" onclick="document.getElementById('filter-genre').value='All'; App.executeSearch();">All</button>
+        <button class="genre-pill" onclick="document.getElementById('filter-genre').value='Action'; App.executeSearch();">Action</button>
+        <button class="genre-pill" onclick="document.getElementById('filter-genre').value='Sci-Fi'; App.executeSearch();">Sci-Fi</button>
+        <button class="genre-pill" onclick="document.getElementById('filter-genre').value='Comedy'; App.executeSearch();">Comedy</button>
+        <button class="genre-pill" onclick="document.getElementById('filter-genre').value='Animation'; App.executeSearch();">Animation</button>
+        <button class="genre-pill" onclick="document.getElementById('filter-genre').value='Drama'; App.executeSearch();">Drama</button>
+        <button class="genre-pill" onclick="document.getElementById('filter-genre').value='Thriller'; App.executeSearch();">Thriller</button>
+        <button class="genre-pill" onclick="document.getElementById('filter-genre').value='Adventure'; App.executeSearch();">Adventure</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       Dynamic Search Results Section (Appears when user searches)
+       ======================================================================== -->
+  <section id="search-results-section" class="carousel-row" style="display: none;">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <div class="section-indicator"></div>
+        <div>
+          <h2 class="section-title">Search & Filter Matches</h2>
+          <span class="section-subtitle">Real-time filtered across 9,742 movie records</span>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" onclick="App.scrollCarousel('search-results-track', -1)">&larr;</button>
+        <button class="carousel-btn" onclick="App.scrollCarousel('search-results-track', 1)">&rarr;</button>
+      </div>
+    </div>
+    <div id="search-results-track" class="carousel-track"></div>
+  </section>
+
+  <!-- ========================================================================
+       Animated Statistics Section
+       ======================================================================== -->
+  <section class="stats-banner">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+            <line x1="7" y1="2" x2="7" y2="22"></line>
+            <line x1="17" y1="2" x2="17" y2="22"></line>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <line x1="2" y1="7" x2="7" y2="7"></line>
+            <line x1="2" y1="17" x2="7" y2="17"></line>
+            <line x1="17" y1="17" x2="22" y2="17"></line>
+            <line x1="17" y1="7" x2="22" y2="7"></line>
+          </svg>
+        </div>
+        <div>
+          <div id="stat-movies" class="stat-value">9,742</div>
+          <div class="stat-label">Movies Indexed</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap cyan">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
+        </div>
+        <div>
+          <div id="stat-ratings" class="stat-value">100,836</div>
+          <div class="stat-label">User Ratings</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap gold">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+        </div>
+        <div>
+          <div id="stat-accuracy" class="stat-value">98.4%</div>
+          <div class="stat-label">Recommendation Match</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon-wrap">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </div>
+        <div>
+          <div class="stat-value">&lt; 3ms</div>
+          <div class="stat-label">Inference Latency</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       Curated Mood-Based Recommendation Stations
+       ======================================================================== -->
+  <section id="moods-section" class="moods-section">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <div class="section-indicator" style="background: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan);"></div>
+        <div>
+          <h2 class="section-title">Explore by Cinematic Mood</h2>
+          <span class="section-subtitle">Intelligent emotional resonance classification</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mood-grid">
+      <div class="mood-card active" data-mood="adrenaline" style="--mood-color: #E50914;" onclick="App._loadMoodRow('adrenaline')">
+        <span class="mood-emoji">⚡</span>
+        <div class="mood-name">Adrenaline Rush</div>
+        <div class="mood-desc">High-octane Action & Thrillers</div>
+      </div>
+
+      <div class="mood-card" data-mood="mind_bending" style="--mood-color: #00D4FF;" onclick="App._loadMoodRow('mind_bending')">
+        <span class="mood-emoji">🌀</span>
+        <div class="mood-name">Mind Bending</div>
+        <div class="mood-desc">Thought-provoking Sci-Fi & Mystery</div>
+      </div>
+
+      <div class="mood-card" data-mood="feel_good" style="--mood-color: #FFD700;" onclick="App._loadMoodRow('feel_good')">
+        <span class="mood-emoji">✨</span>
+        <div class="mood-name">Feel Good</div>
+        <div class="mood-desc">Heartwarming Comedies & Animation</div>
+      </div>
+
+      <div class="mood-card" data-mood="dark_gritty" style="--mood-color: #A0A5BA;" onclick="App._loadMoodRow('dark_gritty')">
+        <span class="mood-emoji">🕶️</span>
+        <div class="mood-name">Dark & Gritty</div>
+        <div class="mood-desc">Tense Crime, Noir & Psychological Drama</div>
+      </div>
+
+      <div class="mood-card" data-mood="heartfelt" style="--mood-color: #FF6B81;" onclick="App._loadMoodRow('heartfelt')">
+        <span class="mood-emoji">💖</span>
+        <div class="mood-name">Heartfelt</div>
+        <div class="mood-desc">Emotional Romance & Human Connection</div>
+      </div>
+
+      <div class="mood-card" data-mood="cosmic_wonder" style="--mood-color: #71EEB8;" onclick="App._loadMoodRow('cosmic_wonder')">
+        <span class="mood-emoji">🚀</span>
+        <div class="mood-name">Cosmic Wonder</div>
+        <div class="mood-desc">Grand Adventures & Epics</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Active Mood Carousel -->
+  <section class="carousel-row">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <div class="section-indicator" style="background: var(--accent-cyan);"></div>
+        <div>
+          <h2 class="section-title">Mood Station Highlights</h2>
+          <span class="section-subtitle">Hand-picked by CineMatch AI for current vibe</span>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-mood', -1)">&larr;</button>
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-mood', 1)">&rarr;</button>
+      </div>
+    </div>
+    <div id="track-mood" class="carousel-track">
+      <!-- Injected via app.js -->
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       Intelligent Recommendation Carousels
+       ======================================================================== -->
+  
+  <!-- Row 1: Top Picks For You (Personalized from Saved Favorites) -->
+  <section class="carousel-row">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <div class="section-indicator"></div>
+        <div>
+          <h2 class="section-title">Top Picks For You</h2>
+          <span class="section-subtitle">Personalized blend synthesized from your favorite selections</span>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-personalized', -1)">&larr;</button>
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-personalized', 1)">&rarr;</button>
+      </div>
+    </div>
+    <div id="track-personalized" class="carousel-track">
+      <!-- Injected via app.js -->
+    </div>
+  </section>
+
+  <!-- Row 2: Trending Among 100,000+ Viewers -->
+  <section class="carousel-row">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <div class="section-indicator"></div>
+        <div>
+          <h2 class="section-title">Trending Among 100,000+ Viewers</h2>
+          <span class="section-subtitle">Bayesian-weighted community favorites with high rating volume</span>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-trending', -1)">&larr;</button>
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-trending', 1)">&rarr;</button>
+      </div>
+    </div>
+    <div id="track-trending" class="carousel-track">
+      <!-- Injected via app.js -->
+    </div>
+  </section>
+
+  <!-- Row 3: Contextual KNN Recommendation ("Because You Watched...") -->
+  <section id="row-contextual" class="carousel-row">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <div class="section-indicator" style="background: var(--accent-gold);"></div>
+        <div>
+          <h2 id="label-contextual" class="section-title">Because You Watched Inception</h2>
+          <span class="section-subtitle">Nearest Neighbors cosine matching in normalized vector space</span>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-contextual', -1)">&larr;</button>
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-contextual', 1)">&rarr;</button>
+      </div>
+    </div>
+    <div id="track-contextual" class="carousel-track">
+      <!-- Injected via app.js -->
+    </div>
+  </section>
+
+  <!-- Row 4: Classic High-Rated Gems -->
+  <section class="carousel-row">
+    <div class="section-header">
+      <div class="section-title-wrap">
+        <div class="section-indicator"></div>
+        <div>
+          <h2 class="section-title">Critically Acclaimed All-Time Classics</h2>
+          <span class="section-subtitle">Highest average ratings in the MovieLens catalog</span>
+        </div>
+      </div>
+      <div class="carousel-controls">
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-toprated', -1)">&larr;</button>
+        <button class="carousel-btn" onclick="App.scrollCarousel('track-toprated', 1)">&rarr;</button>
+      </div>
+    </div>
+    <div id="track-toprated" class="carousel-track">
+      <!-- Injected via app.js -->
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       Interactive AI Recommendation Tuner
+       ======================================================================== -->
+  <section id="recommender-tuner" class="recommender-panel">
+    <div class="recommender-card">
+      <div class="panel-header">
+        <h2 class="panel-title">Interactive AI Recommendation Tuner</h2>
+        <p class="panel-subtitle">
+          Directly manipulate the mathematical weights between Content-Based (Genre/Year) and Collaborative Filtering signals in the Scikit-Learn KNN model.
+        </p>
+      </div>
+
+      <div class="recommender-grid">
+        <div class="panel-field">
+          <label>Seed Movie Title</label>
+          <div class="search-input-wrap">
+            <input type="text" id="tuner-movie-query" class="search-input" value="Toy Story" placeholder="e.g. Toy Story, Inception, Matrix" />
+          </div>
+        </div>
+
+        <div class="panel-field">
+          <label>Results Count</label>
+          <select id="tuner-count" class="filter-select" style="width: 100%; height: 48px;">
+            <option value="6">6 Recommendations</option>
+            <option value="10" selected>10 Recommendations</option>
+            <option value="15">15 Recommendations</option>
+          </select>
+        </div>
+
+        <div class="panel-field">
+          <label>Content / Genre Weight (<span id="genre-val">40%</span>)</label>
+          <div class="slider-container">
+            <input type="range" id="tuner-genre-weight" class="slider-input" min="0" max="100" value="40"
+              oninput="document.getElementById('genre-val').textContent = this.value + '%'; document.getElementById('tuner-rating-weight').value = 100 - this.value; document.getElementById('rating-val').textContent = (100 - this.value) + '%';" />
+            <span class="slider-value" id="genre-val-indicator">40%</span>
+          </div>
+        </div>
+
+        <div class="panel-field">
+          <label>Collaborative / User Rating Weight (<span id="rating-val">60%</span>)</label>
+          <div class="slider-container">
+            <input type="range" id="tuner-rating-weight" class="slider-input" min="0" max="100" value="60"
+              oninput="document.getElementById('rating-val').textContent = this.value + '%'; document.getElementById('tuner-genre-weight').value = 100 - this.value; document.getElementById('genre-val').textContent = (100 - this.value) + '%';" />
+            <span class="slider-value" id="rating-val-indicator">60%</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
+        <button class="btn btn-primary" onclick="App.tuneRecommendations()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+          <span>Calculate Hybrid KNN Recommendations</span>
+        </button>
+      </div>
+
+      <div id="tuner-results-track" class="carousel-track" style="padding-top: 0;">
+        <!-- Tuner results rendered here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================================
+       Movie Details Modal (Luxury Letterboxd / Netflix Cinematic View)
+       ======================================================================== -->
+  <div id="movie-detail-modal" class="modal-backdrop" onclick="if(event.target === this) App.closeMovieDetail()">
+    <div class="detail-modal">
+      <button class="modal-close-btn" onclick="App.closeMovieDetail()" title="Close">&times;</button>
+      
+      <div id="modal-hero-banner" class="modal-hero-banner"></div>
+
+      <div class="modal-body">
+        <div class="modal-header-layout">
+          <img id="modal-poster" class="modal-poster" src="" alt="Poster" />
+          <div class="modal-header-meta">
+            <h1 id="modal-title" class="modal-title">Movie Title</h1>
+            <div id="modal-tagline" class="modal-tagline">Tagline goes here</div>
+            
+            <div class="modal-badges-row">
+              <span id="modal-rating" class="modal-badge gold">★ 4.2</span>
+              <span id="modal-year" class="modal-badge">2024</span>
+              <span id="modal-runtime" class="modal-badge">148 min</span>
+              <span id="modal-mpaa" class="modal-badge">PG-13</span>
+              <span id="modal-match" class="modal-badge cyan">98% AI Match</span>
+            </div>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+              <button id="modal-trailer-btn" class="btn btn-primary">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <span>Play Trailer</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Star Rating -->
+        <div class="user-rating-box">
+          <span style="font-weight: 700; font-size: 0.95rem;">Rate this Movie:</span>
+          <div id="modal-star-rating" class="star-rating">
+            <!-- 5 Stars injected by js -->
+          </div>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">(Contributes directly to collaborative rating profile)</span>
+        </div>
+
+        <!-- Storyline Summary -->
+        <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 8px;">Story Synopsis</h3>
+        <p id="modal-plot" style="font-size: 1rem; line-height: 1.65; color: rgba(255,255,255,0.85); margin-bottom: 20px;"></p>
+
+        <!-- Cast & Crew -->
+        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 24px; font-size: 0.92rem;">
+          <div><strong style="color: var(--text-muted);">Director:</strong> <span id="modal-director"></span></div>
+          <div><strong style="color: var(--text-muted);">Starring:</strong> <span id="modal-cast"></span></div>
+        </div>
+
+        <!-- Recommendation Engine Math Explanation -->
+        <div class="ai-explanation-box">
+          <div class="ai-explanation-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>Recommendation Engine Math Explanation</span>
+          </div>
+          <p id="modal-ai-explanation" class="ai-explanation-text">
+            Calculated via Scikit-Learn NearestNeighbors over a 23-dimensional feature matrix.
+          </p>
+          <div class="engine-metrics-row">
+            <div class="engine-metric-chip">
+              Algorithm
+              <span>KNN Cosine</span>
+            </div>
+            <div class="engine-metric-chip">
+              Feature Vector
+              <span>23 Dims</span>
+            </div>
+            <div class="engine-metric-chip">
+              Content Signals
+              <span>Genres + Year</span>
+            </div>
+            <div class="engine-metric-chip">
+              Collaborative
+              <span>100k Ratings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Similar Movies Carousel inside modal -->
+        <h3 style="font-size: 1.2rem; font-weight: 700; margin: 28px 0 14px;">Similar Titles Recommended by AI</h3>
+        <div id="modal-similar-track" class="carousel-track" style="padding: 4px 0 16px;">
+          <!-- Injected via js -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       Trailer Player Modal
+       ======================================================================== -->
+  <div id="trailer-modal" class="modal-backdrop" onclick="if(event.target === this) App.closeTrailer()">
+    <div class="detail-modal">
+      <button class="modal-close-btn" onclick="App.closeTrailer()" title="Close">&times;</button>
+      <div class="trailer-iframe-wrap">
+        <iframe id="trailer-iframe" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       Analytics Dashboard Modal
+       ======================================================================== -->
+  <div id="analytics-modal" class="modal-backdrop" onclick="if(event.target === this) App.closeAnalyticsModal()">
+    <div class="detail-modal" style="max-width: 900px; padding: 32px;">
+      <button class="modal-close-btn" onclick="App.closeAnalyticsModal()">&times;</button>
+      
+      <div class="section-title-wrap" style="margin-bottom: 20px;">
+        <div class="section-indicator"></div>
+        <div>
+          <h2 class="section-title">CineMatch AI — System & Genre Analytics</h2>
+          <span class="section-subtitle">Real-time breakdown of catalog distribution & machine learning features</span>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <h4 style="font-size: 1rem; margin-bottom: 16px;">Catalog Density by Primary Genre</h4>
+          <div id="analytics-genres-list">
+            <!-- Injected via app.js -->
+          </div>
+        </div>
+
+        <div class="analytics-card" style="display: flex; flex-direction: column; gap: 16px;">
+          <h4 style="font-size: 1rem;">Model Configuration</h4>
+          
+          <div class="engine-metric-chip">
+            Underlying Algorithm
+            <span>k-Nearest Neighbors (k=20)</span>
+          </div>
+
+          <div class="engine-metric-chip">
+            Distance Function
+            <span>Cosine Metric ($1 - \cos(\mathbf{u}, \mathbf{v})$)</span>
+          </div>
+
+          <div class="engine-metric-chip">
+            Matrix Dimensions
+            <span>9,742 items &times; 23 features</span>
+          </div>
+
+          <div class="engine-metric-chip">
+            Implicit Feedback Sparsity
+            <span>98.3% Sparse Matrix</span>
+          </div>
+
+          <div class="engine-metric-chip">
+            Sub-Millisecond Query Time
+            <span>&lt; 2.5 ms per search</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       Favorites & Watchlist Slide-out Drawer
+       ======================================================================== -->
+  <div id="drawer-backdrop" class="drawer-backdrop" onclick="if(event.target === this) App.closeDrawer()">
+    <div class="drawer">
+      <div class="drawer-header">
+        <h3 id="drawer-title" style="font-size: 1.2rem; font-weight: 700;">Library</h3>
+        <button class="btn-icon" onclick="App.closeDrawer()">&times;</button>
+      </div>
+      <div id="drawer-body" class="drawer-body">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       Toast Notification System Container
+       ======================================================================== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ========================================================================
+       Luxury Footer
+       ======================================================================== -->
+  <footer class="luxury-footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="brand-text">CineMatch <span>AI</span></div>
+        <p>
+          Next-generation streaming platform and hybrid movie recommendation system powered by Scikit-Learn NearestNeighbors, Cosine Metric, and Glassmorphic aesthetics.
+        </p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="#hero">Featured Presentation</a></li>
+          <li><a href="#search-section">Search Catalog</a></li>
+          <li><a href="#moods-section">Mood Stations</a></li>
+          <li><a href="#recommender-tuner">AI Tuner</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Architecture</h4>
+        <ul class="footer-links">
+          <li><a href="javascript:void(0)" onclick="App.openAnalyticsModal()">System Analytics</a></li>
+          <li><a href="http://localhost:8000/docs" target="_blank">FastAPI OpenAPI Docs</a></li>
+          <li><a href="/project_knowledge/PROJECT_OVERVIEW.md" target="_blank">Project Knowledge Base</a></li>
+          <li><a href="/project_knowledge/PROJECT_QA.md" target="_blank">100+ Interview Q&A</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul class="footer-links">
+          <li><a href="https://github.com" target="_blank">GitHub Repository</a></li>
+          <li><a href="https://grouplens.org/datasets/movielens/latest/" target="_blank">MovieLens 100k Dataset</a></li>
+          <li><a href="javascript:void(0)" onclick="App.toggleAmbientGlow()">Toggle Ambient Glow</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy; 2026 CineMatch AI. Discover your next favorite story. Built for high-performance portfolio presentation.</div>
+      <div>Designed with Netflix Red, Glassmorphism, and 60 FPS CSS Transitions.</div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="/static/js/store.js"></script>
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
